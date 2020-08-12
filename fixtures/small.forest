@@ -1,0 +1,8 @@
+call
+  data
+    cgs.set
+  block
+    data
+      x
+    data
+      1

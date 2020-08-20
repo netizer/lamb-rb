@@ -8,5 +8,5 @@ Gem::Specification.new do |s|
   s.summary = "Lamb frontend to Forest language."
   s.description = "Lamb is an advanced language that compiles to Forest."
   s.files = `git ls-files -z`.split("\x0")
-  s.require_paths = ["lib"]
+  s.require_paths = ["lib", "generated"]
 end

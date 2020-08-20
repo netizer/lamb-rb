@@ -1,8 +1,12 @@
 call
   data
-    cgs.set
+    cgs.context
   block
-    data
-      x
-    data
-      1
+    call
+      data
+        cgs.set
+      block
+        data
+          x
+        data
+          1

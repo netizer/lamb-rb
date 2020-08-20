@@ -24,7 +24,7 @@ class Interpreter
   end
 
   def eval_text(files_content)
-    lamb(files_content, @direction)
+    lamb(files_content)
   end
 
   private
@@ -39,13 +39,10 @@ class Interpreter
   end
 
   def convert_file_name(file_name)
-    new_file =
-      if @direction == :to_forest
-        file_name.gsub(/\.lamb\Z/, '.forest')
-      else
-        file_name.gsub(/\.forest\Z/, '.lamb')
-      end
-    raise "Output file should not be the same as source file." if file_name == new_file
+    new_file = file_name.gsub(/\.lamb\Z/, '.forest')
+    if file_name == new_file
+      raise "Output file should not be the same as source file."
+    end
     new_file
   end
 

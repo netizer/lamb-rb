@@ -1,5 +1,5 @@
 require 'byebug'
-require 'interpreter'
+require 'lamb/interpreter'
 
 module Lamb
   def lamb__forest_parse_to_forest(file_name)

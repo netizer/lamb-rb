@@ -1,6 +1,6 @@
 require "generated/parser"
 
-module LambInterpreter
+module LambSpecificInterpreter
   def lamb(lines)
     nodes = Parser.new.parse(lines.join)
     nodes.to_forest

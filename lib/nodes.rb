@@ -37,6 +37,12 @@ class GetNode < Struct.new(:name)
   end
 end
 
+class HashGetNode < Struct.new(:name, :source)
+  def to_forest
+    Translator.hash_get_node(name, source)
+  end
+end
+
 class CallNode < Struct.new(:method, :arguments)
   def to_forest
     Translator.fun_call_node(method, arguments)

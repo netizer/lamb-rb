@@ -21,62 +21,64 @@ rule 16 Terminator: NEWLINE
 rule 17 Terminator: ";"
 rule 18 Literal: STRING
 rule 19 Get: IDENTIFIER
-rule 20 Set: IDENTIFIER "=" Expression
-rule 21 Array: "[" "]"
-rule 22 Array: "[" Expression "]"
-rule 23 Array: "[" CommaSeparatedItems "]"
-rule 24 Call: FUNCTION_CALL_NO_ARGS
-rule 25 Call: FUNCTION_CALL Block
-rule 26 Call: FUNCTION_CALL Expression ";"
-rule 27 Call: FUNCTION_CALL CommaSeparatedItems ";"
-rule 28 Def: Array ARROW Expression ";"
-rule 29 Def: Array ARROW CommaSeparatedItems ";"
-rule 30 Def: Array ARROW Block
-rule 31 Block: INDENT Expressions DEDENT
+rule 20 Get: Get "." IDENTIFIER
+rule 21 Set: IDENTIFIER "=" Expression
+rule 22 Set: IDENTIFIER "=" Block
+rule 23 Array: "[" "]"
+rule 24 Array: "[" Expression "]"
+rule 25 Array: "[" CommaSeparatedItems "]"
+rule 26 Call: FUNCTION_CALL_NO_ARGS
+rule 27 Call: FUNCTION_CALL Block
+rule 28 Call: FUNCTION_CALL Expression ";"
+rule 29 Call: FUNCTION_CALL CommaSeparatedItems ";"
+rule 30 Def: Array ARROW Expression ";"
+rule 31 Def: Array ARROW CommaSeparatedItems ";"
+rule 32 Def: Array ARROW Block
+rule 33 Block: INDENT Expressions DEDENT
 
 ------- Symbols -------
 
 **Nonterminals, with rules where they appear
 
-  $start (18)
+  $start (19)
     on right: 
     on left : 
-  Program (19)
+  Program (20)
     on right: 
     on left : 1 2
-  Expressions (20)
-    on right: 2 4 5 31
+  Expressions (21)
+    on right: 2 4 5 33
     on left : 3 4 5 6
-  Expression (21)
-    on right: 3 4 13 14 15 20 22 26 28
+  Expression (22)
+    on right: 3 4 13 14 15 21 24 28 30
     on left : 7 8 9 10 11 12 13
-  Terminator (22)
+  Terminator (23)
     on right: 4 5 6
     on left : 16 17
-  Literal (23)
+  Literal (24)
     on right: 7
     on left : 18
-  Get (24)
-    on right: 8
-    on left : 19
-  Set (25)
+  Get (25)
+    on right: 8 20
+    on left : 19 20
+  Set (26)
     on right: 9
-    on left : 20
-  Array (26)
-    on right: 10 28 29 30
-    on left : 21 22 23
-  Call (27)
+    on left : 21 22
+  Array (27)
+    on right: 10 30 31 32
+    on left : 23 24 25
+  Call (28)
     on right: 11
-    on left : 24 25 26 27
-  Def (28)
+    on left : 26 27 28 29
+  Def (29)
     on right: 12
-    on left : 28 29 30
-  CommaSeparatedItems (29)
-    on right: 15 23 27 29
+    on left : 30 31 32
+  CommaSeparatedItems (30)
+    on right: 15 25 29 31
     on left : 14 15
-  Block (30)
-    on right: 25 30
-    on left : 31
+  Block (31)
+    on right: 22 27 32
+    on left : 33
 
 **Terminals, with rules where they appear
 
@@ -84,20 +86,21 @@ rule 31 Block: INDENT Expressions DEDENT
   error (1) 
   NEWLINE (2) 16
   STRING (3) 18
-  IDENTIFIER (4) 19 20
-  FUNCTION_CALL (5) 25 26 27
-  FUNCTION_CALL_NO_ARGS (6) 24
-  ARROW (7) 28 29 30
-  INDENT (8) 31
-  DEDENT (9) 31
-  "=>" (10) 
-  "=" (11) 20
-  "(" (12) 13
-  ")" (13) 13
-  "," (14) 14 15
-  ";" (15) 17 26 27 28 29
-  "[" (16) 21 22 23
-  "]" (17) 21 22 23
+  IDENTIFIER (4) 19 20 21 22
+  FUNCTION_CALL (5) 27 28 29
+  FUNCTION_CALL_NO_ARGS (6) 26
+  ARROW (7) 30 31 32
+  INDENT (8) 33
+  DEDENT (9) 33
+  "." (10) 20
+  "=>" (11) 
+  "=" (12) 21 22
+  "(" (13) 13
+  ")" (14) 13
+  "," (15) 14 15
+  ";" (16) 17 28 29 30 31
+  "[" (17) 23 24 25
+  "]" (18) 23 24 25
 
 --------- State ---------
 
@@ -167,7 +170,9 @@ state 5
 state 6
 
    8) Expression : Get _
+  20) Get : Get _ "." IDENTIFIER
 
+  "."           shift, and go to state 21
   $default      reduce using rule 8 (Expression)
 
 
@@ -181,11 +186,11 @@ state 7
 state 8
 
   10) Expression : Array _
-  28) Def : Array _ ARROW Expression ";"
-  29) Def : Array _ ARROW CommaSeparatedItems ";"
-  30) Def : Array _ ARROW Block
+  30) Def : Array _ ARROW Expression ";"
+  31) Def : Array _ ARROW CommaSeparatedItems ";"
+  32) Def : Array _ ARROW Block
 
-  ARROW         shift, and go to state 21
+  ARROW         shift, and go to state 22
   $default      reduce using rule 10 (Expression)
 
 
@@ -220,7 +225,7 @@ state 11
   Array         go to state 8
   Call          go to state 9
   Def           go to state 10
-  Expression    go to state 22
+  Expression    go to state 23
 
 state 12
 
@@ -246,17 +251,18 @@ state 14
 state 15
 
   19) Get : IDENTIFIER _
-  20) Set : IDENTIFIER _ "=" Expression
+  21) Set : IDENTIFIER _ "=" Expression
+  22) Set : IDENTIFIER _ "=" Block
 
-  "="           shift, and go to state 23
+  "="           shift, and go to state 24
   $default      reduce using rule 19 (Get)
 
 
 state 16
 
-  21) Array : "[" _ "]"
-  22) Array : "[" _ Expression "]"
-  23) Array : "[" _ CommaSeparatedItems "]"
+  23) Array : "[" _ "]"
+  24) Array : "[" _ Expression "]"
+  25) Array : "[" _ CommaSeparatedItems "]"
 
   STRING        shift, and go to state 14
   IDENTIFIER    shift, and go to state 15
@@ -264,7 +270,7 @@ state 16
   FUNCTION_CALL_NO_ARGS  shift, and go to state 17
   "("           shift, and go to state 11
   "["           shift, and go to state 16
-  "]"           shift, and go to state 26
+  "]"           shift, and go to state 27
 
   Literal       go to state 5
   Get           go to state 6
@@ -272,27 +278,27 @@ state 16
   Array         go to state 8
   Call          go to state 9
   Def           go to state 10
-  Expression    go to state 24
-  CommaSeparatedItems  go to state 25
+  Expression    go to state 25
+  CommaSeparatedItems  go to state 26
 
 state 17
 
-  24) Call : FUNCTION_CALL_NO_ARGS _
+  26) Call : FUNCTION_CALL_NO_ARGS _
 
-  $default      reduce using rule 24 (Call)
+  $default      reduce using rule 26 (Call)
 
 
 state 18
 
-  25) Call : FUNCTION_CALL _ Block
-  26) Call : FUNCTION_CALL _ Expression ";"
-  27) Call : FUNCTION_CALL _ CommaSeparatedItems ";"
+  27) Call : FUNCTION_CALL _ Block
+  28) Call : FUNCTION_CALL _ Expression ";"
+  29) Call : FUNCTION_CALL _ CommaSeparatedItems ";"
 
   STRING        shift, and go to state 14
   IDENTIFIER    shift, and go to state 15
   FUNCTION_CALL  shift, and go to state 18
   FUNCTION_CALL_NO_ARGS  shift, and go to state 17
-  INDENT        shift, and go to state 30
+  INDENT        shift, and go to state 31
   "("           shift, and go to state 11
   "["           shift, and go to state 16
 
@@ -302,14 +308,14 @@ state 18
   Array         go to state 8
   Call          go to state 9
   Def           go to state 10
-  Expression    go to state 27
-  CommaSeparatedItems  go to state 28
-  Block         go to state 29
+  Expression    go to state 28
+  CommaSeparatedItems  go to state 29
+  Block         go to state 30
 
 state 19
 
 
-  $end          shift, and go to state 31
+  $end          shift, and go to state 32
 
 
 state 20
@@ -325,7 +331,7 @@ state 20
   "["           shift, and go to state 16
   $default      reduce using rule 5 (Expressions)
 
-  Expression    go to state 32
+  Expression    go to state 33
   Literal       go to state 5
   Get           go to state 6
   Set           go to state 7
@@ -335,43 +341,22 @@ state 20
 
 state 21
 
-  28) Def : Array ARROW _ Expression ";"
-  29) Def : Array ARROW _ CommaSeparatedItems ";"
-  30) Def : Array ARROW _ Block
+  20) Get : Get "." _ IDENTIFIER
 
-  STRING        shift, and go to state 14
-  IDENTIFIER    shift, and go to state 15
-  FUNCTION_CALL  shift, and go to state 18
-  FUNCTION_CALL_NO_ARGS  shift, and go to state 17
-  INDENT        shift, and go to state 30
-  "("           shift, and go to state 11
-  "["           shift, and go to state 16
+  IDENTIFIER    shift, and go to state 34
 
-  Literal       go to state 5
-  Get           go to state 6
-  Set           go to state 7
-  Array         go to state 8
-  Call          go to state 9
-  Def           go to state 10
-  Expression    go to state 33
-  CommaSeparatedItems  go to state 34
-  Block         go to state 35
 
 state 22
 
-  13) Expression : "(" Expression _ ")"
-
-  ")"           shift, and go to state 36
-
-
-state 23
-
-  20) Set : IDENTIFIER "=" _ Expression
+  30) Def : Array ARROW _ Expression ";"
+  31) Def : Array ARROW _ CommaSeparatedItems ";"
+  32) Def : Array ARROW _ Block
 
   STRING        shift, and go to state 14
   IDENTIFIER    shift, and go to state 15
   FUNCTION_CALL  shift, and go to state 18
   FUNCTION_CALL_NO_ARGS  shift, and go to state 17
+  INDENT        shift, and go to state 31
   "("           shift, and go to state 11
   "["           shift, and go to state 16
 
@@ -381,61 +366,92 @@ state 23
   Array         go to state 8
   Call          go to state 9
   Def           go to state 10
-  Expression    go to state 37
+  Expression    go to state 35
+  CommaSeparatedItems  go to state 36
+  Block         go to state 37
+
+state 23
+
+  13) Expression : "(" Expression _ ")"
+
+  ")"           shift, and go to state 38
+
 
 state 24
 
-  14) CommaSeparatedItems : Expression _ "," Expression
-  22) Array : "[" Expression _ "]"
+  21) Set : IDENTIFIER "=" _ Expression
+  22) Set : IDENTIFIER "=" _ Block
 
-  ","           shift, and go to state 38
-  "]"           shift, and go to state 39
+  STRING        shift, and go to state 14
+  IDENTIFIER    shift, and go to state 15
+  FUNCTION_CALL  shift, and go to state 18
+  FUNCTION_CALL_NO_ARGS  shift, and go to state 17
+  INDENT        shift, and go to state 31
+  "("           shift, and go to state 11
+  "["           shift, and go to state 16
 
+  Literal       go to state 5
+  Get           go to state 6
+  Set           go to state 7
+  Array         go to state 8
+  Call          go to state 9
+  Def           go to state 10
+  Expression    go to state 39
+  Block         go to state 40
 
 state 25
 
-  15) CommaSeparatedItems : CommaSeparatedItems _ "," Expression
-  23) Array : "[" CommaSeparatedItems _ "]"
+  14) CommaSeparatedItems : Expression _ "," Expression
+  24) Array : "[" Expression _ "]"
 
-  ","           shift, and go to state 40
-  "]"           shift, and go to state 41
+  ","           shift, and go to state 41
+  "]"           shift, and go to state 42
 
 
 state 26
 
-  21) Array : "[" "]" _
+  15) CommaSeparatedItems : CommaSeparatedItems _ "," Expression
+  25) Array : "[" CommaSeparatedItems _ "]"
 
-  $default      reduce using rule 21 (Array)
+  ","           shift, and go to state 43
+  "]"           shift, and go to state 44
 
 
 state 27
 
-  14) CommaSeparatedItems : Expression _ "," Expression
-  26) Call : FUNCTION_CALL Expression _ ";"
+  23) Array : "[" "]" _
 
-  ","           shift, and go to state 38
-  ";"           shift, and go to state 42
+  $default      reduce using rule 23 (Array)
 
 
 state 28
 
-  15) CommaSeparatedItems : CommaSeparatedItems _ "," Expression
-  27) Call : FUNCTION_CALL CommaSeparatedItems _ ";"
+  14) CommaSeparatedItems : Expression _ "," Expression
+  28) Call : FUNCTION_CALL Expression _ ";"
 
-  ","           shift, and go to state 40
-  ";"           shift, and go to state 43
+  ","           shift, and go to state 41
+  ";"           shift, and go to state 45
 
 
 state 29
 
-  25) Call : FUNCTION_CALL Block _
+  15) CommaSeparatedItems : CommaSeparatedItems _ "," Expression
+  29) Call : FUNCTION_CALL CommaSeparatedItems _ ";"
 
-  $default      reduce using rule 25 (Call)
+  ","           shift, and go to state 43
+  ";"           shift, and go to state 46
 
 
 state 30
 
-  31) Block : INDENT _ Expressions DEDENT
+  27) Call : FUNCTION_CALL Block _
+
+  $default      reduce using rule 27 (Call)
+
+
+state 31
+
+  33) Block : INDENT _ Expressions DEDENT
 
   NEWLINE       shift, and go to state 12
   STRING        shift, and go to state 14
@@ -447,7 +463,7 @@ state 30
   "["           shift, and go to state 16
 
   Expression    go to state 3
-  Expressions   go to state 44
+  Expressions   go to state 47
   Terminator    go to state 4
   Literal       go to state 5
   Get           go to state 6
@@ -456,59 +472,73 @@ state 30
   Call          go to state 9
   Def           go to state 10
 
-state 31
+state 32
 
 
   $default      accept
 
 
-state 32
+state 33
 
    4) Expressions : Expressions Terminator Expression _
 
   $default      reduce using rule 4 (Expressions)
 
 
-state 33
-
-  14) CommaSeparatedItems : Expression _ "," Expression
-  28) Def : Array ARROW Expression _ ";"
-
-  ","           shift, and go to state 38
-  ";"           shift, and go to state 45
-
-
 state 34
 
-  15) CommaSeparatedItems : CommaSeparatedItems _ "," Expression
-  29) Def : Array ARROW CommaSeparatedItems _ ";"
+  20) Get : Get "." IDENTIFIER _
 
-  ","           shift, and go to state 40
-  ";"           shift, and go to state 46
+  $default      reduce using rule 20 (Get)
 
 
 state 35
 
-  30) Def : Array ARROW Block _
+  14) CommaSeparatedItems : Expression _ "," Expression
+  30) Def : Array ARROW Expression _ ";"
 
-  $default      reduce using rule 30 (Def)
+  ","           shift, and go to state 41
+  ";"           shift, and go to state 48
 
 
 state 36
+
+  15) CommaSeparatedItems : CommaSeparatedItems _ "," Expression
+  31) Def : Array ARROW CommaSeparatedItems _ ";"
+
+  ","           shift, and go to state 43
+  ";"           shift, and go to state 49
+
+
+state 37
+
+  32) Def : Array ARROW Block _
+
+  $default      reduce using rule 32 (Def)
+
+
+state 38
 
   13) Expression : "(" Expression ")" _
 
   $default      reduce using rule 13 (Expression)
 
 
-state 37
+state 39
 
-  20) Set : IDENTIFIER "=" Expression _
+  21) Set : IDENTIFIER "=" Expression _
 
-  $default      reduce using rule 20 (Set)
+  $default      reduce using rule 21 (Set)
 
 
-state 38
+state 40
+
+  22) Set : IDENTIFIER "=" Block _
+
+  $default      reduce using rule 22 (Set)
+
+
+state 41
 
   14) CommaSeparatedItems : Expression "," _ Expression
 
@@ -525,16 +555,16 @@ state 38
   Array         go to state 8
   Call          go to state 9
   Def           go to state 10
-  Expression    go to state 47
+  Expression    go to state 50
 
-state 39
+state 42
 
-  22) Array : "[" Expression "]" _
+  24) Array : "[" Expression "]" _
 
-  $default      reduce using rule 22 (Array)
+  $default      reduce using rule 24 (Array)
 
 
-state 40
+state 43
 
   15) CommaSeparatedItems : CommaSeparatedItems "," _ Expression
 
@@ -551,72 +581,72 @@ state 40
   Array         go to state 8
   Call          go to state 9
   Def           go to state 10
-  Expression    go to state 48
-
-state 41
-
-  23) Array : "[" CommaSeparatedItems "]" _
-
-  $default      reduce using rule 23 (Array)
-
-
-state 42
-
-  26) Call : FUNCTION_CALL Expression ";" _
-
-  $default      reduce using rule 26 (Call)
-
-
-state 43
-
-  27) Call : FUNCTION_CALL CommaSeparatedItems ";" _
-
-  $default      reduce using rule 27 (Call)
-
+  Expression    go to state 51
 
 state 44
 
-   4) Expressions : Expressions _ Terminator Expression
-   5) Expressions : Expressions _ Terminator
-  31) Block : INDENT Expressions _ DEDENT
+  25) Array : "[" CommaSeparatedItems "]" _
 
-  NEWLINE       shift, and go to state 12
-  DEDENT        shift, and go to state 49
-  ";"           shift, and go to state 13
+  $default      reduce using rule 25 (Array)
 
-  Terminator    go to state 20
 
 state 45
 
-  28) Def : Array ARROW Expression ";" _
+  28) Call : FUNCTION_CALL Expression ";" _
 
-  $default      reduce using rule 28 (Def)
+  $default      reduce using rule 28 (Call)
 
 
 state 46
 
-  29) Def : Array ARROW CommaSeparatedItems ";" _
+  29) Call : FUNCTION_CALL CommaSeparatedItems ";" _
 
-  $default      reduce using rule 29 (Def)
+  $default      reduce using rule 29 (Call)
 
 
 state 47
+
+   4) Expressions : Expressions _ Terminator Expression
+   5) Expressions : Expressions _ Terminator
+  33) Block : INDENT Expressions _ DEDENT
+
+  NEWLINE       shift, and go to state 12
+  DEDENT        shift, and go to state 52
+  ";"           shift, and go to state 13
+
+  Terminator    go to state 20
+
+state 48
+
+  30) Def : Array ARROW Expression ";" _
+
+  $default      reduce using rule 30 (Def)
+
+
+state 49
+
+  31) Def : Array ARROW CommaSeparatedItems ";" _
+
+  $default      reduce using rule 31 (Def)
+
+
+state 50
 
   14) CommaSeparatedItems : Expression "," Expression _
 
   $default      reduce using rule 14 (CommaSeparatedItems)
 
 
-state 48
+state 51
 
   15) CommaSeparatedItems : CommaSeparatedItems "," Expression _
 
   $default      reduce using rule 15 (CommaSeparatedItems)
 
 
-state 49
+state 52
 
-  31) Block : INDENT Expressions DEDENT _
+  33) Block : INDENT Expressions DEDENT _
 
-  $default      reduce using rule 31 (Block)
+  $default      reduce using rule 33 (Block)
 

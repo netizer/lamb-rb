@@ -31,6 +31,10 @@ class ForestTranslator
     call_node("cgs.get", node("data", [ node(name) ]))
   end
 
+  def hash_get_node(name, source)
+    call_node("data.hash_get", node("block", [string_node(name), source.to_forest]))
+  end
+
   def fun_call_node(method, arguments)
     name_part = get_node(method)
     if arguments

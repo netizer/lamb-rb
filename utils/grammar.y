@@ -9,6 +9,7 @@ token ARROW
 token INDENT DEDENT
 
 prechigh
+  right "."
   right '=>'
   right '='
 preclow
@@ -50,11 +51,13 @@ rule
   ;
 
   Get:
-    IDENTIFIER  { result = GetNode.new(val[0]) }
+    IDENTIFIER          { result = GetNode.new(val[0]) }
+  | Get "." IDENTIFIER  { result = HashGetNode.new(val[2], val[0]) }
   ;
 
   Set:
     IDENTIFIER "=" Expression  { result = SetNode.new(val[0], val[2]) }
+  | IDENTIFIER "=" Block       { result = SetNode.new(val[0], val[2]) }
   ;
 
   Array:

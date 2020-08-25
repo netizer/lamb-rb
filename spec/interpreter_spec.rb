@@ -18,5 +18,13 @@ describe Lamb::Interpreter do
 
       expect(result).to eq(expected)
     end
+
+    it 'transpiles a config file' do
+      interpreter = Lamb::Interpreter.new
+      result = interpreter.eval_file_and_deparse('fixtures/config.lamb')
+      expected = File.read('fixtures/config.forest')
+
+      expect(result).to eq(expected)
+    end
   end
 end

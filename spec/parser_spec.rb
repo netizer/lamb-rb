@@ -14,9 +14,34 @@ describe Parser do
     expect(Parser.new.parse(tested)).to eq(expected)
   end
 
+  it "parses set expression with block" do
+    tested = "x =\n  \"Hello World\""
+    expected = Nodes.new([
+      SetNode.new(
+        "x",
+        Nodes.new([StringNode.new("Hello World")])
+      )
+    ])
+    expect(Parser.new.parse(tested)).to eq(expected)
+  end
+
   it "parses get expression" do
     tested = "x"
     expected = Nodes.new([GetNode.new("x")])
+    expect(Parser.new.parse(tested)).to eq(expected)
+  end
+
+  it "parses namespaced get expression" do
+    tested = "namespace1.namespace2.name"
+    expected = Nodes.new([
+      HashGetNode.new(
+        "name",
+        HashGetNode.new(
+          "namespace2",
+          GetNode.new("namespace1")
+        )
+      )
+    ])
     expect(Parser.new.parse(tested)).to eq(expected)
   end
 

@@ -20,15 +20,18 @@ describe Lexer do
     expect(Lexer.new.tokenize("[] => print!")).to eq(expected)
   end
 
-  it "creates dot tokens" do
+  it "creates namespaced tokens" do
     expected = [
-      [:IDENTIFIER, "namespace1"],
-      ['.', '.'],
-      [:IDENTIFIER, "namespace2"],
-      ['.', '.'],
-      [:IDENTIFIER, "name"]
+      [:IDENTIFIER, "namespace1.namespace2.name"]
     ]
     expect(Lexer.new.tokenize("namespace1.namespace2.name")).to eq(expected)
+  end
+
+  it "creates namespaced tokens for function calls" do
+    expected = [
+      [:FUNCTION_CALL, "namespace1.namespace2.name"]
+    ]
+    expect(Lexer.new.tokenize("namespace1.namespace2.name:")).to eq(expected)
   end
 
   it "creates indentation tokens" do

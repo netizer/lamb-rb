@@ -34,13 +34,7 @@ describe Parser do
   it "parses namespaced get expression" do
     tested = "namespace1.namespace2.name"
     expected = Nodes.new([
-      HashGetNode.new(
-        "name",
-        HashGetNode.new(
-          "namespace2",
-          GetNode.new("namespace1")
-        )
-      )
+      GetNode.new("namespace1.namespace2.name")
     ])
     expect(Parser.new.parse(tested)).to eq(expected)
   end
@@ -108,6 +102,16 @@ describe Parser do
       tested = "some_function: \"a\", \"b\";"
       expected = Nodes.new([
         CallNode.new("some_function",
+          Nodes.new([StringNode.new("a"), StringNode.new("b")])
+        )
+      ])
+      expect(Parser.new.parse(tested)).to eq(expected)
+    end
+
+    it "parses namespaced calls" do
+      tested = "namespace.some_function: \"a\", \"b\";"
+      expected = Nodes.new([
+        CallNode.new("namespace.some_function",
           Nodes.new([StringNode.new("a"), StringNode.new("b")])
         )
       ])

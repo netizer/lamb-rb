@@ -27,11 +27,11 @@ class Lexer
       # First, we'll scan for names: method names and variable names, which we'll call identifiers.
       # Also scanning for special reserved keywords such as `if`, `def`
       # and `true`.
-      if function_call = chunk[/\A([a-z]\w*:)/, 1]
+      if function_call = chunk[/\A([a-z][\w\.]*:)/, 1]
         tokens << [:FUNCTION_CALL, function_call[0..-2]]
         i += function_call.size # skip what we just parsed
 
-      elsif function_call = chunk[/\A([a-z]\w*!)/, 1]
+      elsif function_call = chunk[/\A([a-z][\w\.]*!)/, 1]
         tokens << [:FUNCTION_CALL_NO_ARGS, function_call[0..-2]]
         i += function_call.size # skip what we just parsed
 
@@ -39,7 +39,7 @@ class Lexer
         tokens << [:ARROW, "=>"]
         i += 2
 
-      elsif identifier = chunk[/\A([a-z]\w*)/, 1]
+      elsif identifier = chunk[/\A([a-z][\w\.]*)/, 1]
         tokens << [:IDENTIFIER, identifier]
         i += identifier.size # skip what we just parsed
 

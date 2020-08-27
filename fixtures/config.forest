@@ -29,15 +29,9 @@ call
                     cgs.set_value
                   call
                     data
-                      data.hash_get
-                    block
-                      data
-                        dev
-                      call
-                        data
-                          cgs.get
-                        data
-                          overrides
+                      cgs.get
+                    data
+                      overrides.dev
             call
               data
                 cgs.get
@@ -70,15 +64,9 @@ call
                     cgs.set_value
                   call
                     data
-                      data.hash_get
-                    block
-                      data
-                        prod
-                      call
-                        data
-                          cgs.get
-                        data
-                          overrides
+                      cgs.get
+                    data
+                      overrides.prod
             call
               data
                 cgs.get

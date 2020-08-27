@@ -21,7 +21,8 @@ module Lamb
     def eval_file(file)
       @interpreter_file = file
       files_content = read(file)
-      eval_text(files_content)
+      tree = eval_text(files_content)
+      with_parent(with_additional_meta_data(tree, file))
     end
 
     def eval_text(files_content)
@@ -29,6 +30,22 @@ module Lamb
     end
 
     private
+
+    def with_additional_meta_data(tree, file_name)
+      tree[:file] = file_name
+      tree[:children] = tree[:children].map do |child|
+        with_additional_meta_data(child, file_name)
+      end
+      tree
+    end
+
+    def with_parent(tree, parent = nil)
+      tree[:parent] = parent
+      tree[:children] = tree[:children].map do |child|
+        with_parent(child, tree)
+      end
+      tree
+    end
 
     def deparse(tree, indent = 0)
       head = " " * indent * INDENTATION_BASE + tree[:command]

@@ -48,14 +48,22 @@ describe Nodes do
   end
 
   it "translates NodesNode" do
-    tested =  Nodes.new([StringNode.new("x")])
+    tested =  Nodes.new([StringNode.new({ v: "x", meta: {} })])
     expected = context_with_x_data_node
 
     expect(tested.to_forest).to eq(expected)
   end
 
+  it "passes meta information" do
+    tested =  StringNode.new({ v: "x", meta: { line: 1, pos: 2 } })
+    expected = x_data_node.merge(line: 1, pos: 2)
+    expected[:children][0].merge!(line: 1, pos: 2)
+
+    expect(tested.to_forest).to eq(expected)
+  end
+
   it "translates SetNode" do
-    tested =  Nodes.new([SetNode.new("x", StringNode.new("1"))])
+    tested =  Nodes.new([SetNode.new({ v: "x", meta: {} }, StringNode.new({ v: "1", meta: {} }))])
     expected = {
       command: "call",
       children: [
@@ -85,9 +93,9 @@ describe Nodes do
 
   it "translates CallNode" do
     tested = CallNode.new(
-      "testing_log",
+      { v: "testing_log", meta: {} },
       Nodes.new([
-        StringNode.new("defined second")
+        StringNode.new({ v: "defined second", meta: {} })
       ])
     )
     expected = {
@@ -130,14 +138,14 @@ describe Nodes do
   end
 
   it "translates DefNode" do
-    tested = SetNode.new("second_function",
+    tested = SetNode.new({ v: "second_function", meta: {} },
       DefNode.new(
-        Nodes.new([]),
+        Nodes.new([], {}),
         Nodes.new([
           CallNode.new(
-            "testing_log",
+            { v: "testing_log", meta: {} },
             Nodes.new([
-              StringNode.new("defined second")
+              StringNode.new({ v: "defined second", meta: {} })
             ])
           )
         ])

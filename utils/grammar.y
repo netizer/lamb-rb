@@ -59,7 +59,7 @@ rule
   ;
 
   Array:
-    '[' ']'                      { result = Nodes.new([]) }
+    '[' ']'                      { result = Nodes.new([], val[0][:meta]) }
   | '[' Expression ']'           { result = Nodes.new([val[1]]) }
   | '[' CommaSeparatedItems ']'  { result = val[1] }
 

@@ -1,6 +1,6 @@
 call
   data
-    cgs.context
+    context
   block
     call
       data
@@ -16,29 +16,26 @@ call
               cgs.last
             call
               data
-                cgs.context
+                context
               block
                 call
                   data
                     cgs.set_value
                   call
                     data
-                      ln.now_with_args
+                      format_call
                     block
+                      data
+                        testing_log
                       call
                         data
-                          cgs.context
+                          context
                         block
                           call
                             data
                               cgs.set_value
                             data
                               defined first
-                      call
-                        data
-                          cgs.get
-                        data
-                          testing_log
     call
       data
         cgs.set
@@ -53,61 +50,58 @@ call
               cgs.last
             call
               data
-                cgs.context
+                context
               block
                 call
                   data
                     cgs.set_value
                   call
                     data
-                      ln.now_with_args
+                      format_call
                     block
+                      data
+                        testing_log
                       call
                         data
-                          cgs.context
+                          context
                         block
                           call
                             data
                               cgs.set_value
                             data
                               defined second
-                      call
-                        data
-                          cgs.get
-                        data
-                          testing_log
     call
       data
         cgs.set_value
       call
         data
-          ln.now
-        call
-          data
-            cgs.get
+          format_call
+        block
           data
             second_function
+          block
     call
       data
         cgs.set_value
       call
         data
-          ln.now
-        call
-          data
-            cgs.get
+          format_call
+        block
           data
             first_function
+          block
     call
       data
         cgs.set_value
       call
         data
-          ln.now_with_args
+          format_call
         block
+          data
+            assert
           call
             data
-              cgs.context
+              context
             block
               call
                 data
@@ -119,14 +113,8 @@ call
                   cgs.set_value
                 call
                   data
-                    ln.now
-                  call
-                    data
-                      cgs.get
+                    format_call
+                  block
                     data
                       testing_logs
-          call
-            data
-              cgs.get
-            data
-              assert
+                    block

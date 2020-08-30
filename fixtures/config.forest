@@ -1,6 +1,6 @@
 call
   data
-    cgs.context
+    context
   block
     call
       data
@@ -10,18 +10,20 @@ call
           development
         call
           data
-            ln.now_with_args
+            format_call
           block
+            data
+              merge
             call
               data
-                cgs.context
+                context
               block
                 call
                   data
                     cgs.set_value
                   call
                     data
-                      cgs.get
+                      get
                     data
                       default
                 call
@@ -29,14 +31,9 @@ call
                     cgs.set_value
                   call
                     data
-                      cgs.get
+                      get
                     data
                       overrides.dev
-            call
-              data
-                cgs.get
-              data
-                merge
     call
       data
         cgs.set
@@ -45,18 +42,20 @@ call
           production
         call
           data
-            ln.now_with_args
+            format_call
           block
+            data
+              merge
             call
               data
-                cgs.context
+                context
               block
                 call
                   data
                     cgs.set_value
                   call
                     data
-                      cgs.get
+                      get
                     data
                       default
                 call
@@ -64,24 +63,21 @@ call
                     cgs.set_value
                   call
                     data
-                      cgs.get
+                      get
                     data
                       overrides.prod
-            call
-              data
-                cgs.get
-              data
-                merge
     call
       data
         cgs.set_value
       call
         data
-          ln.now_with_args
+          format_call
         block
+          data
+            private
           call
             data
-              cgs.context
+              context
             block
               call
                 data
@@ -91,7 +87,7 @@ call
                     default
                   call
                     data
-                      cgs.context
+                      context
                     block
                       call
                         data
@@ -109,59 +105,50 @@ call
                             pool
                           call
                             data
-                              ln.now_with_args
+                              format_call
                             block
+                              data
+                                integer
                               call
                                 data
-                                  cgs.context
+                                  context
                                 block
                                   call
                                     data
                                       cgs.set_value
                                     call
                                       data
-                                        ln.now_with_args
+                                        format_call
                                       block
+                                        data
+                                          or
                                         call
                                           data
-                                            cgs.context
+                                            context
                                           block
                                             call
                                               data
                                                 cgs.set_value
                                               call
                                                 data
-                                                  ln.now_with_args
+                                                  format_call
                                                 block
+                                                  data
+                                                    envvar
                                                   call
                                                     data
-                                                      cgs.context
+                                                      context
                                                     block
                                                       call
                                                         data
                                                           cgs.set_value
                                                         data
                                                           POOL
-                                                  call
-                                                    data
-                                                      cgs.get
-                                                    data
-                                                      envvar
                                             call
                                               data
                                                 cgs.set_value
                                               data
                                                 5
-                                        call
-                                          data
-                                            cgs.get
-                                          data
-                                            or
-                              call
-                                data
-                                  cgs.get
-                                data
-                                  integer
                       call
                         data
                           cgs.set
@@ -170,38 +157,32 @@ call
                             url
                           call
                             data
-                              ln.now_with_args
+                              format_call
                             block
+                              data
+                                ip
                               call
                                 data
-                                  cgs.context
+                                  context
                                 block
                                   call
                                     data
                                       cgs.set_value
                                     call
                                       data
-                                        ln.now_with_args
+                                        format_call
                                       block
+                                        data
+                                          envvar
                                         call
                                           data
-                                            cgs.context
+                                            context
                                           block
                                             call
                                               data
                                                 cgs.set_value
                                               data
                                                 DATABASE_URL
-                                        call
-                                          data
-                                            cgs.get
-                                          data
-                                            envvar
-                              call
-                                data
-                                  cgs.get
-                                data
-                                  ip
               call
                 data
                   cgs.set
@@ -210,7 +191,7 @@ call
                     overrides
                   call
                     data
-                      cgs.context
+                      context
                     block
                       call
                         data
@@ -220,7 +201,7 @@ call
                             dev
                           call
                             data
-                              cgs.context
+                              context
                             block
                               call
                                 data
@@ -238,7 +219,7 @@ call
                             prod
                           call
                             data
-                              cgs.context
+                              context
                             block
                               call
                                 data
@@ -264,24 +245,16 @@ call
                                     password
                                   call
                                     data
-                                      ln.now_with_args
+                                      format_call
                                     block
+                                      data
+                                        envvar
                                       call
                                         data
-                                          cgs.context
+                                          context
                                         block
                                           call
                                             data
                                               cgs.set_value
                                             data
                                               DATABASE_PASSWORD
-                                      call
-                                        data
-                                          cgs.get
-                                        data
-                                          envvar
-          call
-            data
-              cgs.get
-            data
-              private

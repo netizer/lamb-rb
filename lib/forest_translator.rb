@@ -3,7 +3,7 @@ require 'byebug'
 class ForestTranslator
   def nodes_node(nodes, enforced_meta)
     meta = enforced_meta || nodes.first.meta
-    return(call_node("cgs.context", [], meta)) unless nodes
+    return(call_node("context", [], meta)) unless nodes
 
     translated = nodes.map do |item|
       if item.is_a? SetNode
@@ -12,7 +12,7 @@ class ForestTranslator
         call_node("cgs.set_value", item.to_forest, meta)
       end
     end
-    call_node("cgs.context", node("block", translated, meta), meta)
+    call_node("context", node("block", translated, meta), meta)
   end
 
   def literal_node(value, meta = {})
@@ -34,7 +34,7 @@ class ForestTranslator
 
   def get_node(name)
     call_node(
-      "cgs.get",
+      "get",
       node(
         "data",
         [ node(name[:v], [], name[:meta]) ],
@@ -45,16 +45,19 @@ class ForestTranslator
   end
 
   def fun_call_node(method, arguments)
-    name_part = get_node(method)
-    if arguments
-      call_node(
-        "ln.now_with_args",
-        node("block", [arguments.to_forest, name_part], method[:meta]),
+    empty_block = node("block", [], method[:meta])
+    call_node(
+      "format_call",
+      node(
+        "block",
+        [
+          node("data", [node(method[:v], [], method[:meta])], method[:meta]),
+          arguments ? arguments.to_forest : empty_block
+        ],
         method[:meta]
-      )
-    else
-      call_node("ln.now", name_part, method[:meta])
-    end
+      ),
+      method[:meta]
+    )
   end
 
   def fun_def_node(arguments, body)

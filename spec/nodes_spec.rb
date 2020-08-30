@@ -20,8 +20,8 @@ describe Nodes do
   let(:set_data_node) { one_line_data_node("cgs.set") }
   let(:set_value_data_node) { one_line_data_node("cgs.set_value") }
   let(:get_data_node) { one_line_data_node("cgs.get") }
-  let(:context_data_node) { one_line_data_node("cgs.context") }
-  let(:now_with_args_data_node) { one_line_data_node("ln.now_with_args") }
+  let(:context_data_node) { one_line_data_node("context") }
+  let(:now_with_args_data_node) { one_line_data_node("format_call") }
   let(:defined_second_data_node) { one_line_data_node("defined second") }
   let(:second_function_data_node) { one_line_data_node("second_function") }
   let(:last_data_node) { one_line_data_node("cgs.last") }
@@ -91,6 +91,34 @@ describe Nodes do
     expect(tested.to_forest).to eq(expected)
   end
 
+  # Debugger
+  def print_node(node)
+    puts "#{node[:file]}:#{node[:line]}" if node[:file]
+    puts node_context_to_lines(node).join("\n")
+  end
+
+  def node_context_to_lines(node)
+    context = node_context(node)
+    delta = context.last[:line].to_s.length - context.first[:line].to_s.length
+    lines = []
+    context.map do |line|
+      justed_line_nr = line[:line].to_s.rjust(delta, ' ')
+      lines << "#{line[:indent]}#{line[:command]}"
+    end
+    lines
+  end
+
+  def node_context(node, indent = "", result = [])
+    result << { line: node[:line], indent: indent, command: node[:command] }
+    return result unless node[:children]
+
+    indent = indent + "  "
+    node[:children].each do |child|
+      node_context(child, indent, result)
+    end
+    result
+  end
+
   it "translates CallNode" do
     tested = CallNode.new(
       { v: "testing_log", meta: {} },
@@ -105,6 +133,7 @@ describe Nodes do
         {
           command: "block",
           children: [
+            testing_log_data_node,
             {
               command: "call",
               children: [
@@ -121,13 +150,6 @@ describe Nodes do
                     }
                   ]
                 }
-              ]
-            },
-            {
-              command: "call",
-              children: [
-                get_data_node,
-                testing_log_data_node
               ]
             }
           ]
@@ -185,6 +207,7 @@ describe Nodes do
                                     {
                                       command: "block",
                                       children: [
+                                        testing_log_data_node,
                                         {
                                           command: "call",
                                           children: [
@@ -201,13 +224,6 @@ describe Nodes do
                                                 }
                                               ]
                                             }
-                                          ]
-                                        },
-                                        {
-                                          command: "call",
-                                          children: [
-                                            get_data_node,
-                                            testing_log_data_node
                                           ]
                                         }
                                       ]

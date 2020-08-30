@@ -1,6 +1,6 @@
 call
   data
-    cgs.context
+    context
   block
     call
       data

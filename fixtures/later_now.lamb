@@ -1,9 +1,9 @@
 first_function = [] =>
-  testing_log: "defined first";
+  testing_log: "defined first"
 
 second_function = [] =>
-  testing_log: "defined second";
+  testing_log: "defined second"
 
 second_function!
 first_function!
-assert: "defined second\ndefined first", testing_logs!;
+assert: "defined second\ndefined first", testing_logs!

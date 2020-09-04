@@ -7,6 +7,7 @@ token FUNCTION_CALL
 token FUNCTION_CALL_NO_ARGS
 token ARROW
 token INDENT DEDENT
+token EOF
 
 prechigh
   right '=>'
@@ -15,34 +16,71 @@ preclow
 
 rule
   Program:
-    /* nothing */                      { result = Nodes.new([]) }
-  | Expressions                        { result = val[0] }
+    /* nothing */ { result = Nodes.new([]) }
+  | Chunks   { result = val[0] }
   ;
 
-  Expressions:
-    Expression                         { result = Nodes.new(val) }
-  | Expressions Terminator Expression  { result = val[0] << val[2] }
-  | Expressions Terminator             { result = val[0] }
-  | Terminator                         { result = Nodes.new([]) }
+  /* Chunk is an expression taking at least one whole line */
+  Chunks:
+    Chunk { result = Nodes.new([val[0]]) }
+  | Chunks Chunk { result = val[0] << val[1] }
   ;
 
-  Expression:
+  Chunk:
+    LiteralChunk
+  | CallNoArgsChunk
+  | GetChunk
+  | SetChunk
+  | ArrayChunk
+  | CallChunk
+  | DefChunk
+  ;
+
+  LiteralChunk:
+    Literal Terminator { result = val[0] }
+  ;
+
+  GetChunk:
+    Get Terminator { result = val[0] }
+  ;
+
+  CallNoArgsChunk:
+    CallNoArgs Terminator { result = val[0] }
+
+  SetChunk:
+    Set Terminator { result = val[0] }
+  ;
+
+  ArrayChunk:
+    Array Terminator { result = val[0] }
+  ;
+
+  Item:
     Literal
   | Get
   | Set
   | Array
   | Call
+  | CallNoArgs
   | Def
-  | '(' Expression ')'  { result = val[1] }
   ;
 
-  CommaSeparatedItems:
-    Expression "," Expression           { result = Nodes.new([val[0], val[2]]) }
-  | CommaSeparatedItems "," Expression  { result = val[0] << val[2] }
+  Items:
+    Item           { result = Nodes.new([val[0]]) }
+  | Items "," Item { result = val[0] << val[2] }
+
+  Block:
+    NEWLINE INDENT Chunks DEDENT { result = val[2] }
+  ;
+
+  NewLines:
+    NEWLINE
+  | NewLines NEWLINE
+  ;
 
   Terminator:
-    NEWLINE
-  | ";"
+    NewLines
+  | EOF
   ;
 
   Literal:
@@ -50,33 +88,48 @@ rule
   ;
 
   Get:
-    IDENTIFIER          { result = GetNode.new(val[0]) }
+    IDENTIFIER { result = GetNode.new(val[0]) }
+  ;
+
+  CallNoArgs:
+    FUNCTION_CALL_NO_ARGS { result = CallNode.new(val[0], nil) }
+
+  SetChunk:
+    IDENTIFIER "=" Item Terminator { result = SetNode.new(val[0], val[2]) }
+  | IDENTIFIER "=" Block Terminator { result = SetNode.new(val[0], val[2]) }
+  | IDENTIFIER "=" CallChunk { result = SetNode.new(val[0], val[2]) }
+  | IDENTIFIER "=" DefChunk { result = SetNode.new(val[0], val[2]) }
   ;
 
   Set:
-    IDENTIFIER "=" Expression  { result = SetNode.new(val[0], val[2]) }
-  | IDENTIFIER "=" Block       { result = SetNode.new(val[0], val[2]) }
+    "(" IDENTIFIER "=" Item ")" { result = SetNode.new(val[1], val[3]) }
   ;
 
   Array:
-    '[' ']'                      { result = Nodes.new([], val[0][:meta]) }
-  | '[' Expression ']'           { result = Nodes.new([val[1]]) }
-  | '[' CommaSeparatedItems ']'  { result = val[1] }
+    '[' ']'        { result = Nodes.new([], val[0][:meta]) }
+  | '[' Items ']'  { result = val[1] }
+  ;
+
+  CallChunk:
+    FUNCTION_CALL Block Terminator   { result = CallNode.new(val[0], val[1]) }
+  | FUNCTION_CALL Items Terminator   { result = CallNode.new(val[0], val[1]) }
+  | FUNCTION_CALL Items FUNCTION_CALL Block Terminator
+  ;
 
   Call:
-    FUNCTION_CALL_NO_ARGS                  { result = CallNode.new(val[0], nil) }
-  | FUNCTION_CALL Block                    { result = CallNode.new(val[0], val[1]) }
-  | FUNCTION_CALL Expression ";"           { result = CallNode.new(val[0], Nodes.new([val[1]])) }
-  | FUNCTION_CALL CommaSeparatedItems ";"  { result = CallNode.new(val[0], val[1]) }
+    "(" FUNCTION_CALL Items ")"    { result = CallNode.new(val[1], val[2]) }
+  ;
+
+  DefChunk:
+    Array ARROW Block Terminator { result = DefNode.new(val[0], val[2]) }
+  | Array ARROW Items Terminator { result = DefNode.new(val[0], val[2]) }
+  | Array ARROW Block { result = DefNode.new(val[0], val[2]) }
+  ;
 
   Def:
-    Array ARROW Expression ";" { result = DefNode.new(val[0], Nodes.new([val[2]])) }
-  | Array ARROW CommaSeparatedItems ";" { result = DefNode.new(val[0], val[2]) }
-  | Array ARROW Block { result = DefNode.new(val[0], val[2]) }
-
-  Block:
-    INDENT Expressions DEDENT  { result = val[1] }
+    "(" Array ARROW Items ")"
   ;
+
 end
 
 ---- header

@@ -101,7 +101,7 @@ describe Parser do
     end
 
     it "parses a call with a single argument" do
-      tested = "some_function: \"a\";"
+      tested = "some_function: \"a\""
       expected = Nodes.new([
         CallNode.new({ v: "some_function", meta: { line: 1, pos: 1 } },
           Nodes.new([StringNode.new({ v: "a", meta: { line: 1, pos: 16 } })])
@@ -111,7 +111,7 @@ describe Parser do
     end
 
     it "parses a call witth multiple arguments" do
-      tested = "some_function: \"a\", \"b\";"
+      tested = "some_function: \"a\", \"b\""
       expected = Nodes.new([
         CallNode.new({ v: "some_function", meta: { line: 1, pos: 1 } },
           Nodes.new([
@@ -124,7 +124,7 @@ describe Parser do
     end
 
     it "parses namespaced calls" do
-      tested = "namespace.some_function: \"a\", \"b\";"
+      tested = "namespace.some_function: \"a\", \"b\""
       expected = Nodes.new([
         CallNode.new({ v: "namespace.some_function", meta: { line: 1, pos: 1 } },
           Nodes.new([
@@ -139,7 +139,7 @@ describe Parser do
 
   describe "function definition" do
     it "parses one-expression function definition with no arguments" do
-      tested = "[] => print!;"
+      tested = "[] => print!"
       expected = Nodes.new([
         DefNode.new(
           Nodes.new([], { line: 1, pos: 1 }),
@@ -155,7 +155,7 @@ describe Parser do
     end
 
     it "parses multi-expression function definition with no arguments" do
-      tested = "[] => print!, print!;"
+      tested = "[] => print!, print!"
       expected = Nodes.new([
         DefNode.new(
           Nodes.new([], { line: 1, pos: 1}),
@@ -169,7 +169,7 @@ describe Parser do
     end
 
     it "parses function definition with one argument" do
-      tested = "[a] => print!, print!;"
+      tested = "[a] => print!, print!"
       expected = Nodes.new([
         DefNode.new(
           Nodes.new([GetNode.new({ v: "a", meta: { line: 1, pos: 2 } })]),
@@ -183,7 +183,7 @@ describe Parser do
     end
 
     it "parses anonymous function definition with multiple arguments" do
-      tested = "[a, b] => print!, print!;"
+      tested = "[a, b] => print!, print!"
       expected = Nodes.new([
         DefNode.new(
           Nodes.new([

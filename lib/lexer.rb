@@ -33,47 +33,51 @@ class Lexer
 
   def tokenize(code)
     @meta = { line: 1, pos: 1, total_pos: 0, new_lines: 0 }
-    code.chomp! # Remove extra line breaks
+    # Remove extra line breaks
+    code.chomp!
     tokens = []
 
-    current_indent = 0 # number of spaces in the last indent
+    current_indent = 0
     indent_stack = []
 
-    i = 0 # Current character position
+    i = 0
     while i < code.size
       chunk = code[i..-1]
-
+      # name:
       if function_call = chunk[/\A([a-z][\w\.]*:)/, 1]
         tokens << add_token(:FUNCTION_CALL, function_call[0..-2])
-        i = increase_i(i, function_call.size) # skip what we just parsed
-
+        i = increase_i(i, function_call.size)
+      # name!
       elsif function_call = chunk[/\A([a-z][\w\.]*!)/, 1]
         tokens << add_token(:FUNCTION_CALL_NO_ARGS, function_call[0..-2])
-        i = increase_i(i, function_call.size) # skip what we just parsed
-
+        i = increase_i(i, function_call.size)
+      # =>
       elsif def_call = chunk[/\A(=>)/, 1]
         tokens << add_token(:ARROW, "=>")
         i = increase_i(i, 2)
-
+      # identifier
       elsif identifier = chunk[/\A([a-z][\w\.]*)/, 1]
         tokens << add_token(:IDENTIFIER, identifier)
-        i = increase_i(i, identifier.size) # skip what we just parsed
-
+        i = increase_i(i, identifier.size)
+      # "string"
       elsif string = chunk[/\A"([^"]*)"/, 1]
         tokens << add_token(:STRING, string)
-        i = increase_i(i, string.size + 2) # skip two more to exclude the `"`.
-
-      elsif (indent = chunk[/\A\n( +)/m, 1]) && indent && (indent.size > current_indent)
+        i = increase_i(i, string.size + 2)
+      # .. at the end of line - ignore return
+      elsif (match = chunk[/\A\n( *)\.\. /]) && (indent = $1) && (indent.size == current_indent)
+        i = increase_i(i, match.size, true)
+      # return + spaces, when indent exceeds the current one
+      elsif (match = chunk[/\A\n( +)/]) && (indent = $1) && (indent.size > current_indent)
         current_indent = indent.size
         indent_stack.push(current_indent)
         i = increase_i(i, indent.size + 1, true)
         tokens << add_token(:NEWLINE, "\n")
         tokens << add_token(:INDENT, indent.size)
-
-      elsif indent = chunk[/\A\n( *)/m, 1] # Matches "<newline> <spaces>"
-        if indent.size == current_indent # Case 2
-          tokens << add_token(:NEWLINE, "\n") # Nothing to do, we'r still in the same block
-        elsif indent.size < current_indent # Case 3
+      # return + optional spaces, otherwise
+      elsif indent = chunk[/\A\n( *)/m, 1]
+        if indent.size == current_indent
+          tokens << add_token(:NEWLINE, "\n")
+        elsif indent.size < current_indent
           while indent.size < current_indent
             indent_stack.pop
             current_indent = indent_stack.last || 0
@@ -83,11 +87,10 @@ class Lexer
           tokens << add_token(:NEWLINE, "\n")
         end
         i = increase_i(i, indent.size + 1, true)
-
+      # space
       elsif chunk.match(/\A /)
         i = increase_i(i, 1)
-
-      # We treat all other single characters as a token. Eg.: `( ) , . ! + - <`.
+      # other single characters
       else
         value = chunk[0,1]
         tokens << add_token(value, value)
@@ -95,16 +98,11 @@ class Lexer
       end
     end
 
-    # Close all open blocks.
-    # If the code ends without dedenting, this will take care of
-    # balancing the `INDENT`...`DEDENT`s.
     while indent = indent_stack.pop
       tokens << add_token(:NEWLINE, "\n")
       tokens << add_token(:DEDENT, indent_stack.first || 0)
     end
-
     tokens << add_token(:EOF, "")
-
     tokens
   end
 end

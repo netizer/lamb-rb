@@ -76,6 +76,18 @@ describe Lexer do
     expect(Lexer.new.tokenize("namespace1.namespace2.name:")).to eq(expected)
   end
 
+  it "skips return when it is followed by 2 dots with the same indent" do
+    tested = "fun: \"arg1\",\n.. \"arg2\""
+    expected = [
+      [:FUNCTION_CALL, { meta: { line: 1, pos: 1 }, v: "fun" }],
+      [:STRING, { meta: { line: 1, pos: 6 }, v: "arg1" }],
+      [",", { meta: { line: 1, pos: 12 }, v: "," }],
+      [:STRING, { meta: { line: 2, pos: 4 }, v: "arg2" }],
+      [:EOF, { meta: { line: 2, pos: 10 }, v: "" }]
+    ]
+    expect(Lexer.new.tokenize(tested)).to eq(expected)
+  end
+
   it "creates indentation tokens" do
     code = <<-CODE
 if: "1"

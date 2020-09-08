@@ -5,7 +5,7 @@ private:
   default =
     adapter = "postgresql"
     pool = integer: (or: (envvar: "POOL"), "5")
-    url = ip: (envvar: "DATABASE_URL")
+    url = url: (envvar: "DATABASE_URL")
   overrides =
     dev =
       database = "development_database"

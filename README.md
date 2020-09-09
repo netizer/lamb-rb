@@ -65,4 +65,4 @@ It's a version 0.0.x, so use it for space travel at your own risk. I'm currently
 
 ## Community
 
-If you feel like taking a look at the code or playing with it, or sending a PR would be fun, that's great :-) I'll do my best to make that experience as nice for you as possible. A good startting pointt to play with Forestt and with Lamb is tto follow the instructions in https://github.com/netizer/forest-utils
+If you feel like taking a look at the code or playing with it, or sending a PR would be fun, that's great :-) I'll do my best to make that experience as nice for you as possible. A good startting pointt to play with Forest and with Lamb is tto follow the instructions in https://github.com/netizer/forest-utils

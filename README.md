@@ -8,7 +8,7 @@ The main goal of the language is to be simple, extensible and to put a developer
 - Clear error messages.
 - Static typing (TBD).
 
-It is a frontend of another programming language, called Forest.
+It is a frontend of another programming language, called Forest. Check out its repository for more details: https://github.com/netizer/forest-rb
 
 Forest adds another pile of features to the stack:
 - Homoiconicity - The code is a data structure - like lisp, but the code is a tree, not a list. Oh, and you don't have brackets everywhere, so you could call it a cute lisp if you really want to. Wait. Lisp is LISt Processor, and Forest is TREEs Processor, or FORESt Processor, so maybe Foresp? Treep?... haha, nevermind.
